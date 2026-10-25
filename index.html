@@ -37,17 +37,16 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* QR CARD */
 #qr-wrap{opacity:0;transform:translateY(20px) scale(.97);transition:opacity .65s ease,transform .65s cubic-bezier(.22,1,.36,1);margin-bottom:28px}
 #qr-wrap.on{opacity:1;transform:translateY(0) scale(1)}
-#qr-card{background:#fff;border-radius:16px;padding:20px;width:200px;height:200px;display:flex;align-items:center;justify-content:center;position:relative}
-#qr-card img{width:100%;height:100%;object-fit:contain;border-radius:4px}
+#qr-card{background:#ffffff;border-radius:16px;padding:16px;width:210px;height:210px;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+#qr-card img{width:100%;height:100%;object-fit:contain;display:block}
 
 /* AMOUNT */
 #amount-wrap{opacity:0;transition:opacity .5s ease;text-align:center;margin-bottom:16px}
 #amount-wrap.on{opacity:1}
 #amount{font-size:42px;font-weight:200;color:var(--gold);letter-spacing:-.02em}
-#period{font-size:14px;color:var(--t2);margin-top:2px}
 
 /* INSTRUCTION */
-#instr{opacity:0;transition:opacity .5s ease;font-size:13px;color:var(--t3);text-align:center;letter-spacing:.04em;line-height:1.8}
+#instr{opacity:0;transition:opacity .5s ease;font-size:13px;color:var(--t2);text-align:center;letter-spacing:.04em;line-height:1.8}
 #instr.on{opacity:1}
 
 /* ─── ADMIN FAB ─── */
@@ -80,7 +79,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <img src="qr.jpg" alt="QR Code">
     </div>
   </div>
-  <div id="instr" class="on">Scan with Alipay<br></div>
+  <div id="instr" class="on">Scan with Alipay</div>
 </div>
 
 <button id="fab" onclick="openAdmin()">✦</button>
@@ -90,7 +89,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <button class="mc" onclick="closeAdmin()">×</button>
     <h3>Payment Settings</h3>
     <div class="fg"><label class="fl">Amount (e.g. ¥150)</label><input class="fi" id="cfg-amount" placeholder="¥150"></div>
-    <div class="fg"><label class="fl">Instruction Text</label><textarea class="fta" id="cfg-instr" style="min-height:60px" placeholder="Scan with Alipay or WeChat Pay"></textarea></div>
+    <div class="fg"><label class="fl">Instruction Text</label><textarea class="fta" id="cfg-instr" style="min-height:60px" placeholder="Scan with Alipay"></textarea></div>
     <button class="btn" onclick="saveCfg()">Save</button>
   </div>
 </div>
@@ -98,7 +97,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <div id="toast"></div>
 
 <script>
-let cfg={amount:"¥150", instr:"Scan with Alipay<br>"};
+let cfg={amount:"¥150", instr:"Scan with Alipay"};
 
 function boot(){
   try{const u=window.claude?.use('user');if(u&&u.isOwner())document.getElementById('fab').style.display='flex';}catch(e){}
