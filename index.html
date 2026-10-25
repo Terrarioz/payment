@@ -7,10 +7,8 @@
   --bg:#080808;--s1:#0f0f0f;--s2:#151515;
   --b1:#1c1c1c;--b2:#262626;
   --t1:#f0ede8;--t2:#888;--t3:#3a3a3a;
-  --gold:#c4a96a;--gold2:rgba(196,169,106,.15);
+  --gold:#c4a96a;
   color-scheme:dark;box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:inherit}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--t1);font:15px/1.6 -apple-system,'Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
@@ -18,122 +16,34 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--t1);font:15px/1.
 /* ─── NOISE GRAIN ─── */
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:0}
 
-/* ─── VERTICAL DRAW LINE ─── */
-#vline{position:fixed;left:50%;top:0;width:1px;transform:translateX(-50%);background:linear-gradient(to bottom,transparent,rgba(196,169,106,.6) 40%,rgba(196,169,106,.6) 60%,transparent);box-shadow:0 0 12px rgba(196,169,106,.2);height:0;transition:height .7s cubic-bezier(.4,0,.2,1);z-index:1}
-
 /* ─── STAGE ─── */
 #stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;z-index:2}
 
 /* NAME */
-#name-wrap{overflow:hidden;margin-bottom:6px}
-#name{font-size:clamp(60px,10vw,96px);font-weight:200;letter-spacing:-.03em;color:var(--t1);opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
-#name.on{opacity:1;transform:translateY(0)}
+#name{font-size:clamp(60px,10vw,96px);font-weight:200;letter-spacing:-.03em;color:var(--t1);margin-bottom:4px}
 #name em{font-style:italic;color:var(--gold);text-shadow:0 0 40px rgba(196,169,106,.25)}
 
 /* LABEL */
-#label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);opacity:0;transition:opacity .5s ease;margin-bottom:44px}
-#label.on{opacity:1}
+#label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:32px}
 
 /* QR CARD */
-#qr-wrap{opacity:0;transform:translateY(20px) scale(.97);transition:opacity .65s ease,transform .65s cubic-bezier(.22,1,.36,1);margin-bottom:28px}
-#qr-wrap.on{opacity:1;transform:translateY(0) scale(1)}
-#qr-card{background:#ffffff;border-radius:16px;padding:16px;width:210px;height:210px;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+#qr-wrap{margin-bottom:24px}
+#qr-card{background:#ffffff;border-radius:16px;padding:16px;width:210px;height:210px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 #qr-card img{width:100%;height:100%;object-fit:contain;display:block}
 
-/* AMOUNT */
-#amount-wrap{opacity:0;transition:opacity .5s ease;text-align:center;margin-bottom:16px}
-#amount-wrap.on{opacity:1}
-#amount{font-size:42px;font-weight:200;color:var(--gold);letter-spacing:-.02em}
-
 /* INSTRUCTION */
-#instr{opacity:0;transition:opacity .5s ease;font-size:13px;color:var(--t2);text-align:center;letter-spacing:.04em;line-height:1.8}
-#instr.on{opacity:1}
-
-/* ─── ADMIN FAB ─── */
-#fab{position:fixed;bottom:28px;right:28px;width:36px;height:36px;background:var(--s2);border:1px solid var(--b2);border-radius:50%;display:none;align-items:center;justify-content:center;font-size:14px;color:var(--t3);cursor:pointer;transition:all .15s;z-index:10}
-#fab:hover{border-color:var(--gold);color:var(--gold)}
-
-/* ─── MODAL ─── */
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:20;display:none;align-items:center;justify-content:center}
-.mbg.on{display:flex}
-.modal{background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:26px;width:min(420px,92vw)}
-.modal h3{font-size:16px;font-weight:600;margin:0 0 18px}
-.mc{float:right;background:none;border:none;color:var(--t2);font:22px/1 inherit;cursor:pointer}
-.mc:hover{color:var(--t1)}
-.fg{margin-bottom:14px}
-.fl{display:block;font-size:11px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.fi,.fta{width:100%;font:14px/1.5 inherit;background:var(--bg);color:var(--t1);border:1px solid var(--b2);border-radius:8px;padding:9px 12px}
-.fi:focus,.fta:focus{outline:1px solid var(--gold);border-color:var(--gold)}
-.btn{font:600 13px/1 inherit;background:var(--gold);color:#000;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;width:100%;transition:opacity .15s}
-.btn:hover{opacity:.85}
-#toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b2);color:var(--t2);padding:9px 18px;border-radius:8px;font-size:13px;display:none;z-index:30;white-space:nowrap}
+#instr{font-size:13px;color:var(--t2);text-align:center;letter-spacing:.04em;line-height:1.8}
 </style></head><body>
 
-<div id="vline"></div>
-
 <div id="stage">
-  <div id="name-wrap"><div id="name">Yike<em>.</em></div></div>
+  <div id="name">Yike<em>.</em></div>
   <div id="label">Session Payment</div>
   <div id="qr-wrap">
     <div id="qr-card">
       <img src="qr.jpg" alt="QR Code">
     </div>
   </div>
-  <div id="instr" class="on">Scan with Alipay</div>
+  <div id="instr">Scan with Alipay</div>
 </div>
 
-<button id="fab" onclick="openAdmin()">✦</button>
-
-<div class="mbg" id="adm-bg">
-  <div class="modal">
-    <button class="mc" onclick="closeAdmin()">×</button>
-    <h3>Payment Settings</h3>
-    <div class="fg"><label class="fl">Amount (e.g. ¥150)</label><input class="fi" id="cfg-amount" placeholder="¥150"></div>
-    <div class="fg"><label class="fl">Instruction Text</label><textarea class="fta" id="cfg-instr" style="min-height:60px" placeholder="Scan with Alipay"></textarea></div>
-    <button class="btn" onclick="saveCfg()">Save</button>
-  </div>
-</div>
-
-<div id="toast"></div>
-
-<script>
-let cfg={amount:"¥150", instr:"Scan with Alipay"};
-
-function boot(){
-  try{const u=window.claude?.use('user');if(u&&u.isOwner())document.getElementById('fab').style.display='flex';}catch(e){}
-  applyCfg();
-  animate();
-}
-
-function applyCfg(){
-  if(cfg.amount)document.getElementById('amount').textContent=cfg.amount;
-  if(cfg.instr)document.getElementById('instr').innerHTML=cfg.instr.replace(/\n/g,'<br>');
-}
-
-function animate(){
-  setTimeout(()=>{document.getElementById('vline').style.height='100vh';},100);
-  setTimeout(()=>document.getElementById('name').classList.add('on'),500);
-  setTimeout(()=>document.getElementById('label').classList.add('on'),780);
-  setTimeout(()=>document.getElementById('qr-wrap').classList.add('on'),1050);
-  setTimeout(()=>document.getElementById('instr').classList.add('on'),1500);
-}
-
-function openAdmin(){
-  document.getElementById('adm-bg').classList.add('on');
-  document.getElementById('cfg-amount').value=cfg.amount||'';
-  document.getElementById('cfg-instr').value=cfg.instr||'';
-}
-function closeAdmin(){document.getElementById('adm-bg').classList.remove('on')}
-
-function saveCfg(){
-  cfg.amount=document.getElementById('cfg-amount').value.trim();
-  cfg.instr=document.getElementById('cfg-instr').value.trim();
-  applyCfg();
-  closeAdmin();
-  toast('Saved ✓');
-}
-
-function toast(m){const e=document.getElementById('toast');e.textContent=m;e.style.display='block';clearTimeout(toast._);toast._=setTimeout(()=>e.style.display='none',2600)}
-
-boot();
-</script></body></html>
+</body></html>
