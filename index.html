@@ -1,0 +1,172 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Payment · Yike</title>
+<style>
+:root{
+  --bg:#080808;--s1:#0f0f0f;--s2:#151515;
+  --b1:#1c1c1c;--b2:#262626;
+  --t1:#f0ede8;--t2:#888;--t3:#3a3a3a;
+  --gold:#c4a96a;--gold2:rgba(196,169,106,.15);
+  color-scheme:dark;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--t1);font:15px/1.6 -apple-system,'Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+
+/* ─── NOISE GRAIN ─── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:0}
+
+/* ─── VERTICAL DRAW LINE ─── */
+#vline{position:fixed;left:50%;top:0;width:1px;transform:translateX(-50%);background:linear-gradient(to bottom,transparent,rgba(196,169,106,.6) 40%,rgba(196,169,106,.6) 60%,transparent);box-shadow:0 0 12px rgba(196,169,106,.2);height:0;transition:height .7s cubic-bezier(.4,0,.2,1);z-index:1}
+
+/* ─── STAGE ─── */
+#stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;z-index:2}
+
+/* NAME */
+#name-wrap{overflow:hidden;margin-bottom:6px}
+#name{font-size:clamp(60px,10vw,96px);font-weight:200;letter-spacing:-.03em;color:var(--t1);opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+#name.on{opacity:1;transform:translateY(0)}
+#name em{font-style:italic;color:var(--gold);text-shadow:0 0 40px rgba(196,169,106,.25)}
+
+/* LABEL */
+#label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);opacity:0;transition:opacity .5s ease;margin-bottom:44px}
+#label.on{opacity:1}
+
+/* QR CARD */
+#qr-wrap{opacity:0;transform:translateY(20px) scale(.97);transition:opacity .65s ease,transform .65s cubic-bezier(.22,1,.36,1);margin-bottom:28px}
+#qr-wrap.on{opacity:1;transform:translateY(0) scale(1)}
+#qr-card{background:#fff;border-radius:16px;padding:20px;width:200px;height:200px;display:flex;align-items:center;justify-content:center;position:relative}
+#qr-card img{width:100%;height:100%;object-fit:contain;border-radius:4px}
+#qr-ph{text-align:center;color:#999;font-size:13px;line-height:1.6}
+/* shimmer on QR while loading */
+#qr-card.loading::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.4) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 1.4s ease infinite}
+@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
+
+/* AMOUNT */
+#amount-wrap{opacity:0;transition:opacity .5s ease;text-align:center;margin-bottom:16px}
+#amount-wrap.on{opacity:1}
+#amount{font-size:42px;font-weight:200;color:var(--gold);letter-spacing:-.02em}
+#period{font-size:14px;color:var(--t2);margin-top:2px}
+
+/* INSTRUCTION */
+#instr{opacity:0;transition:opacity .5s ease;font-size:13px;color:var(--t3);text-align:center;letter-spacing:.04em;line-height:1.8}
+#instr.on{opacity:1}
+
+/* ─── ADMIN FAB ─── */
+#fab{position:fixed;bottom:28px;right:28px;width:36px;height:36px;background:var(--s2);border:1px solid var(--b2);border-radius:50%;display:none;align-items:center;justify-content:center;font-size:14px;color:var(--t3);cursor:pointer;transition:all .15s;z-index:10}
+#fab:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ─── MODAL ─── */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:20;display:none;align-items:center;justify-content:center}
+.mbg.on{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:26px;width:min(420px,92vw)}
+.modal h3{font-size:16px;font-weight:600;margin:0 0 18px}
+.mc{float:right;background:none;border:none;color:var(--t2);font:22px/1 inherit;cursor:pointer}
+.mc:hover{color:var(--t1)}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.fi,.fta{width:100%;font:14px/1.5 inherit;background:var(--bg);color:var(--t1);border:1px solid var(--b2);border-radius:8px;padding:9px 12px}
+.fi:focus,.fta:focus{outline:1px solid var(--gold);border-color:var(--gold)}
+.btn{font:600 13px/1 inherit;background:var(--gold);color:#000;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;width:100%;transition:opacity .15s}
+.btn:hover{opacity:.85}
+#toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--b2);color:var(--t2);padding:9px 18px;border-radius:8px;font-size:13px;display:none;z-index:30;white-space:nowrap}
+</style></head><body>
+
+<div id="vline"></div>
+
+<div id="stage">
+  <div id="name-wrap"><div id="name">Yike<em>.</em></div></div>
+  <div id="label">Session Payment</div>
+  <div id="qr-wrap"><div id="qr-card" class="loading"><div id="qr-ph">Loading…</div></div></div>
+  <div id="amount-wrap"><div id="amount">¥150</div><div id="period">per session</div></div>
+  <div id="instr">Scan with Alipay or WeChat Pay<br>Send a screenshot after payment</div>
+</div>
+
+<button id="fab" onclick="openAdmin()">✦</button>
+
+<div class="mbg" id="adm-bg">
+  <div class="modal">
+    <button class="mc" onclick="closeAdmin()">×</button>
+    <h3>Payment Settings</h3>
+    <div class="fg"><label class="fl">Amount (e.g. ¥150)</label><input class="fi" id="cfg-amount" placeholder="¥150"></div>
+    <div class="fg"><label class="fl">Label (e.g. per session)</label><input class="fi" id="cfg-label" placeholder="per session"></div>
+    <div class="fg"><label class="fl">Instruction Text</label><textarea class="fta" id="cfg-instr" style="min-height:60px" placeholder="Scan with Alipay or WeChat Pay&#10;Send a screenshot after payment"></textarea></div>
+    <div class="fg">
+      <label class="fl">QR Code Image</label>
+      <input type="file" id="qr-file" accept="image/*" style="font:13px inherit;color:var(--t2)">
+      <p style="font-size:12px;color:var(--t3);margin:6px 0 0">Alipay or WeChat Pay QR</p>
+    </div>
+    <button class="btn" onclick="saveCfg()">Save</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let db=null,assets=null,cfg={};
+
+async function boot(){
+  try{db=await claude.use('db');assets=await claude.use('assets');const u=await claude.use('user');if(u&&u.isOwner())document.getElementById('fab').style.display='flex';}catch(e){}
+  if(db){
+    try{const s=await db.doc('settings/pay').get();if(s.exists){cfg=s.data();applyCfg();}}
+    catch(e){}
+    db.doc('settings/pay').onSnapshot(s=>{if(s.exists){cfg=s.data();applyCfg();}});
+  }
+  animate();
+}
+
+function applyCfg(){
+  if(cfg.amount)document.getElementById('amount').textContent=cfg.amount;
+  if(cfg.period)document.getElementById('period').textContent=cfg.period;
+  if(cfg.instr)document.getElementById('instr').innerHTML=cfg.instr.replace(/\n/g,'<br>');
+  if(cfg.qrId){
+    const card=document.getElementById('qr-card');
+    card.classList.remove('loading');
+    card.innerHTML=`<img src="/_blob/${cfg.qrId}" alt="QR Code">`;
+  } else {
+    document.getElementById('qr-card').classList.remove('loading');
+    document.getElementById('qr-ph').textContent='QR code not set';
+  }
+}
+
+function animate(){
+  // 1. vertical line draws
+  setTimeout(()=>{document.getElementById('vline').style.height='100vh';},100);
+  // 2. name slides up
+  setTimeout(()=>document.getElementById('name').classList.add('on'),500);
+  // 3. label fades
+  setTimeout(()=>document.getElementById('label').classList.add('on'),780);
+  // 4. QR card rises
+  setTimeout(()=>document.getElementById('qr-wrap').classList.add('on'),1050);
+  // 5. amount
+  setTimeout(()=>document.getElementById('amount-wrap').classList.add('on'),1300);
+  // 6. instruction
+  setTimeout(()=>document.getElementById('instr').classList.add('on'),1500);
+}
+
+function openAdmin(){
+  document.getElementById('adm-bg').classList.add('on');
+  document.getElementById('cfg-amount').value=cfg.amount||'';
+  document.getElementById('cfg-label').value=cfg.period||'';
+  document.getElementById('cfg-instr').value=cfg.instr||'';
+}
+function closeAdmin(){document.getElementById('adm-bg').classList.remove('on')}
+
+async function saveCfg(){
+  const amount=document.getElementById('cfg-amount').value.trim();
+  const period=document.getElementById('cfg-label').value.trim();
+  const instr=document.getElementById('cfg-instr').value.trim();
+  const file=document.getElementById('qr-file').files[0];
+  let qrId=cfg.qrId||null;
+  if(file&&assets){try{const r=await assets.upload(file);qrId=r.id;}catch(e){toast('Upload failed');return;}}
+  const data={amount,period,instr,qrId};
+  try{await db.doc('settings/pay').set(data);cfg=data;applyCfg();closeAdmin();toast('Saved ✓');}
+  catch(e){toast('Error: '+e.message)}
+}
+
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.style.display='block';clearTimeout(toast._);toast._=setTimeout(()=>e.style.display='none',2600)}
+
+boot();
+</script></body></html>
